@@ -32,18 +32,18 @@ const TopoDS_Shape& Wire::shape() const
 {
   return m_wire;
 }
-void Wire::setShape( const TopoDS_Shape& shape)
+void Wire::setShape(const TopoDS_Shape& shape)
 {
 
   m_wire = TopoDS::Wire(shape);
 }
 
-Persistent<FunctionTemplate> Wire::_template;
+Nan::Persistent<v8::FunctionTemplate> Wire::_template;
 
 
 const char* toString(BRepBuilderAPI_WireError err)
 {
-  switch(err) {
+  switch (err) {
   case BRepBuilderAPI_WireDone:
     return "the wire is done";
     break;
@@ -61,44 +61,47 @@ const char* toString(BRepBuilderAPI_WireError err)
 }
 
 
+NAN_METHOD(Wire::NewInstance) { _NewInstance<Wire>(info); }
+
+
 
 NAN_METHOD(Wire::New)
 {
-  NanScope();
-
-  if (!args.IsConstructCall()) {
-    NanThrowError(" use new occ.Wire() to construct a wire");
-    NanReturnUndefined();
+  if (!info.IsConstructCall()) {
+    return Nan::ThrowError(" use new occ.Wire() to construct a Wire");
   }
 
   Wire* pThis = new Wire();
-  pThis->Wrap(args.This());
+  pThis->Wrap(info.This());
+  pThis->InitNew(info);
 
-  if (args.Length()==0) {
+  if (info.Length() == 0) {
     // this is a empty wire
-    NanReturnValue(args.This());
+    info.GetReturnValue().Set(info.This());
+    return;
   }
 
   BRepBuilderAPI_MakeWire mkWire;
 
-  Standard_Boolean status = false;
+  //Xx Standard_Boolean statusIsDone = false;
 
-  BRepBuilderAPI_WireError err= BRepBuilderAPI_WireDone;
+  BRepBuilderAPI_WireError err = BRepBuilderAPI_WireDone;
 
-  for( int i =0; i< args.Length(); i++) {
+  for (int i = 0; i < info.Length(); i++) {
 
-    if (NanHasInstance(Edge::_template,args[i]->ToObject())) {
+    Edge* edge = DynamicCast<Edge>(info[i]);
+    Wire* wire = DynamicCast<Wire>(info[i]);
 
-      Edge* edge = node::ObjectWrap::Unwrap<Edge>(args[i]->ToObject());
+    if (edge) { 
+      // IsInstanceOf<Edge>(info[i]->ToObject())) {
+      //xx Edge* edge = Nan::ObjectWrap::Unwrap<Edge>(info[i]->ToObject());
       mkWire.Add(edge->edge());
 
-      status = mkWire.IsDone();
+      //Xx statusIsDone = mkWire.IsDone();
       err = mkWire.Error();
-    }  else if (NanHasInstance(Wire::_template,args[i]->ToObject())) {
-
-      Wire* wire = node::ObjectWrap::Unwrap<Wire>(args[i]->ToObject());
+    } else if (wire) {
       mkWire.Add(wire->wire());
-      status = mkWire.IsDone();
+      //Xx statusIsDone = mkWire.IsDone();
       err = mkWire.Error();
     }
   }
@@ -106,44 +109,67 @@ NAN_METHOD(Wire::New)
   err = mkWire.Error();
   if (BRepBuilderAPI_WireDone == err) {
     pThis->setShape(mkWire.Wire());
-  }  else {
-    std::string mesg = std::string("Invalid Wire err:=")+toString(mkWire.Error());
-    NanThrowError(mesg.c_str());       
-    NanReturnUndefined();
+  } else {
+    std::string mesg = std::string("Invalid Wire err:=") + toString(mkWire.Error());
+    return Nan::ThrowError(mesg.c_str());
   }
-
-  NanReturnValue(args.This());
+  info.GetReturnValue().Set(info.This());
 }
 
-Local<Object>  Wire::Clone() const
+v8::Local<v8::Object>  Wire::Clone() const
 {
   Wire* obj = new Wire();
-  Local<Object> instance = NanNew(_template)->GetFunction()->NewInstance();
+  v8::Local<v8::Object> instance = Nan::New(_template)->GetFunction()->NewInstance(Nan::GetCurrentContext()).ToLocalChecked();
   obj->Wrap(instance);
   obj->setShape(this->shape());
   return instance;
 }
 
-void Wire::Init(Handle<Object> target)
+NAN_METHOD(Wire::InitNew)
+{
+  Base::InitNew(info);
+  REXPOSE_READ_ONLY_PROPERTY_INTEGER(Wire, numVertices);
+  REXPOSE_READ_ONLY_PROPERTY_INTEGER(Wire, numEdges);
+  REXPOSE_READ_ONLY_PROPERTY_BOOLEAN(Wire, isClosed);
+}
+
+void Wire::Init(v8::Handle<v8::Object> target)
 {
   // Prepare constructor template
-  v8::Local<v8::FunctionTemplate> tpl = NanNew<v8::FunctionTemplate>(Wire::New);  
-  tpl->SetClassName(NanNew("Wire"));
+  v8::Local<v8::FunctionTemplate> tpl = Nan::New<v8::FunctionTemplate>(Wire::New);
+  tpl->SetClassName(Nan::New("Wire").ToLocalChecked());
 
   // object has one internal filed ( the C++ object)
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
 
-  NanAssignPersistent<v8::FunctionTemplate>(_template, tpl);
+  _template.Reset(tpl);
 
   // Prototype
-  Local<ObjectTemplate> proto = tpl->PrototypeTemplate();
+  v8::Local<v8::ObjectTemplate> proto = tpl->PrototypeTemplate();
 
   Base::InitProto(proto);
 
-  EXPOSE_READ_ONLY_PROPERTY_INTEGER(Wire,numVertices);
-  EXPOSE_READ_ONLY_PROPERTY_INTEGER(Wire,numEdges);
-  EXPOSE_READ_ONLY_PROPERTY_BOOLEAN(Wire,isClosed);
+  EXPOSE_METHOD(Wire,getEdges);
+  EXPOSE_METHOD(Wire,getVertices);
+  EXPOSE_READ_ONLY_PROPERTY_INTEGER(Wire, numVertices);
+  EXPOSE_READ_ONLY_PROPERTY_INTEGER(Wire, numEdges);
+  EXPOSE_READ_ONLY_PROPERTY_BOOLEAN(Wire, isClosed);
 
-  target->Set(NanNew("Wire"), tpl->GetFunction());
+  target->Set(Nan::New("Wire").ToLocalChecked(), tpl->GetFunction());
 }
+
+NAN_METHOD(Wire::getEdges)
+{
+  Wire* pThis = UNWRAP(Wire);
+  auto arr = extract_shapes_as_javascript_array(pThis,TopAbs_EDGE);
+  info.GetReturnValue().Set(arr);
+}
+NAN_METHOD(Wire::getVertices)
+{
+  Wire* pThis = UNWRAP(Wire);
+  auto arr = extract_shapes_as_javascript_array(pThis,TopAbs_VERTEX);
+  info.GetReturnValue().Set(arr);
+}
+
+
 

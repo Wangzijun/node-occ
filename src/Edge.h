@@ -6,8 +6,8 @@
 class Edge : public Base {
 
 public:
-    TopoDS_Edge m_edge;
-	std::vector<float> m_positions;
+   TopoDS_Edge m_edge;
+   std::vector<float> m_positions;
 
     Edge() {
         ;
@@ -20,9 +20,7 @@ public:
     int numVertices();
     double length();
 
-
-
-	Handle<Object> polygonize(double factor);
+    v8::Local<v8::Object> polygonize(double factor);
 
     int createLine(Vertex *start, Vertex *end);
     int createArc(Vertex *start, Vertex *end, const gp_Pnt& center);
@@ -48,21 +46,27 @@ public:
     virtual void setShape(const TopoDS_Shape& shape) {
         m_edge = TopoDS::Edge(shape);
     }
-    virtual Local<Object>  Clone() const ;
+    virtual v8::Local<v8::Object>  Clone() const ;
     virtual Base* Unwrap(v8::Local<v8::Object> obj) const  {
-        return node::ObjectWrap::Unwrap<Edge>(obj);
+        return Nan::ObjectWrap::Unwrap<Edge>(obj);
     }
 
-    static NAN_METHOD(createLine);
-    static NAN_METHOD(createCircle);
-    static NAN_METHOD(createArc3P);
-	  static NAN_METHOD(polygonize);
+    static NAN_PROPERTY_GETTER(getter_firstVertex);
+    static NAN_PROPERTY_GETTER(getter_lastVertex);
+
+    // Static Methods
+    static NAN_METHOD(static_createLine);
+    static NAN_METHOD(static_createCircle);
+    static NAN_METHOD(static_createArc3P);
+
+
+    static NAN_METHOD(polygonize);
+    static NAN_METHOD(getVertices);
 
     static NAN_METHOD(New);
+    static NAN_METHOD(startVertex);
+    static NAN_METHOD(endVertex);
 
-    Handle<Value> startVertex();
-    Handle<Value> endVertex();
-
-    static void Init(Handle<Object> target);
-    static v8::Persistent<v8::FunctionTemplate> _template;
+    static void Init(v8::Handle<v8::Object> target);
+    static Nan::Persistent<v8::FunctionTemplate> _template;
 };

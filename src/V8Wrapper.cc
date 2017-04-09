@@ -19,12 +19,10 @@
 
 NAN_METHOD(ForceGC)
 {
-    NanScope();
-    NanIdleNotification(100);
-    NanReturnUndefined();
-
+    Nan::IdleNotification(100);
 }
-void Initialize(Handle<Object> target)
+
+void Initialize(v8::Handle<v8::Object> target)
 {
 
     BoundingBox::Init(target);
@@ -40,61 +38,51 @@ void Initialize(Handle<Object> target)
     Wire::Init(target);
     BooleanOperation::Init(target);
 
-    NODE_SET_METHOD(target,"makeBox",ShapeFactory::makeBox);
-    NODE_SET_METHOD(target,"makeBox",ShapeFactory::makeBox);
-    NODE_SET_METHOD(target,"makeCylinder",ShapeFactory::makeCylinder);
-    NODE_SET_METHOD(target,"makeCone",ShapeFactory::makeCone);
-    NODE_SET_METHOD(target,"makeSphere",ShapeFactory::makeSphere);
-    NODE_SET_METHOD(target,"makeTorus",ShapeFactory::makeTorus);
-    NODE_SET_METHOD(target,"makePrism",ShapeFactory::makePrism);
-    NODE_SET_METHOD(target,"makeThickSolid",ShapeFactory::makeThickSolid);
-    NODE_SET_METHOD(target,"makeDraftAngle",ShapeFactory::makeDraftAngle);
-    NODE_SET_METHOD(target,"makeFillet",ShapeFactory::makeFillet);
-   // target->Set(NanSymbol("makeChamfer")NanNew<FunctionTemplate>(ShapeFactory::makeDraftAngle);
+
+    Nan::SetMethod(target,"makePlaneMirror",  Transformation::makePlaneMirror);
+
+    // Vertex
+    Nan::SetMethod(target,"makeVertex",        ShapeFactory::makeVertex);
 
 
-    NODE_SET_METHOD(target,"fuse",ShapeFactory::fuse);
-    NODE_SET_METHOD(target,"cut",ShapeFactory::cut);
-    NODE_SET_METHOD(target,"common",ShapeFactory::common);
-    NODE_SET_METHOD(target,"compound",ShapeFactory::compound);
+    // edges
+    Nan::SetMethod(target,"makeLine",        Edge::static_createLine);
+    Nan::SetMethod(target,"makeCircle",      Edge::static_createCircle);
+    Nan::SetMethod(target,"makeArc3P",       Edge::static_createArc3P);
 
-    NODE_SET_METHOD(target,"writeSTL",writeSTL);
-    NODE_SET_METHOD(target,"writeSTEP",writeSTEP);
-    NODE_SET_METHOD(target,"writeBREP",writeBREP);
-    NODE_SET_METHOD(target,"readSTEP",readSTEP);
-    NODE_SET_METHOD(target,"readBREP",readBREP);
+    //xx Nan::SetMethod(target,"makeEdge",    ShapeFactory::makeEdge);
 
-    //xx NODE_SET_METHOD(target,"oceVersion",NanNew("0.13"));
-    target->Set(NanNew("oceVersion"),  NanNew("0.13"));
+    Nan::SetMethod(target,"makeWire",    ShapeFactory::makeWire);
+    Nan::SetMethod(target,"makeFace",    ShapeFactory::makeFace);
 
-    NODE_SET_METHOD(target,"gc",ForceGC);
-#if 0
-    target->Set(NanNew("makeBox"),      NanNew<FunctionTemplate>(ShapeFactory::makeBox)->GetFunction());
-    target->Set(NanNew("makeCylinder"), NanNew<FunctionTemplate>(ShapeFactory::makeCylinder)->GetFunction());
-    target->Set(NanNew("makeCone"),         NanNew<FunctionTemplate>(ShapeFactory::makeCone)->GetFunction());
-    target->Set(NanNew("makeSphere"),       NanNew<FunctionTemplate>(ShapeFactory::makeSphere)->GetFunction());
-    target->Set(NanNew("makeTorus"),        NanNew<FunctionTemplate>(ShapeFactory::makeTorus)->GetFunction());
-    target->Set(NanNew("makePrism"),        NanNew<FunctionTemplate>(ShapeFactory::makePrism)->GetFunction());
-    target->Set(NanNew("makeThickSolid"),   NanNew<FunctionTemplate>(ShapeFactory::makeThickSolid)->GetFunction());
-    target->Set(NanNew("makeDraftAngle"),   NanNew<FunctionTemplate>(ShapeFactory::makeDraftAngle)->GetFunction());
-    target->Set(NanNew("makeFillet"),   NanNew<FunctionTemplate>(ShapeFactory::makeFillet)->GetFunction());
-   // target->Set(NanSymbol("makeChamfer")  NanNew<FunctionTemplate>(ShapeFactory::makeDraftAngle)->GetFunction());
+    //----------------------------------------------------------
+    Nan::SetMethod(target,"makeBox",       ShapeFactory::makeBox);
+    Nan::SetMethod(target,"makeCylinder",  ShapeFactory::makeCylinder);
+    Nan::SetMethod(target,"makeCone",      ShapeFactory::makeCone);
+    Nan::SetMethod(target,"makeSphere",    ShapeFactory::makeSphere);
+    Nan::SetMethod(target,"makeTorus",     ShapeFactory::makeTorus);
+    Nan::SetMethod(target,"makePrism",     ShapeFactory::makePrism);
+    Nan::SetMethod(target,"makeThickSolid",ShapeFactory::makeThickSolid);
+    Nan::SetMethod(target,"makeDraftAngle",ShapeFactory::makeDraftAngle);
+    Nan::SetMethod(target,"makeFillet",    ShapeFactory::makeFillet);
+    // target->Set(NanSymbol("makeChamfer")NanNew<FunctionTemplate>(ShapeFactory::makeDraftAngle);
 
+    Nan::SetMethod(target,"fuse",          ShapeFactory::fuse);
+    Nan::SetMethod(target,"cut",           ShapeFactory::cut);
+    Nan::SetMethod(target,"common",        ShapeFactory::common);
+    Nan::SetMethod(target,"compound",      ShapeFactory::compound);
 
-    target->Set(NanNew("fuse"),        NanNew<FunctionTemplate>(ShapeFactory::fuse)->GetFunction());
-    target->Set(NanNew("cut"),         NanNew<FunctionTemplate>(ShapeFactory::cut)->GetFunction());
-    target->Set(NanNew("common"),      NanNew<FunctionTemplate>(ShapeFactory::common)->GetFunction());
-    target->Set(NanNew("compound"),    NanNew<FunctionTemplate>(ShapeFactory::compound)->GetFunction());
+    Nan::SetMethod(target,"writeSTL",      writeSTL);
+    Nan::SetMethod(target,"writeSTEP",     writeSTEP);
+    Nan::SetMethod(target,"writeBREP",     writeBREP);
+    Nan::SetMethod(target,"readSTEP",      readSTEP);
+    Nan::SetMethod(target,"readBREP",      readBREP);
 
-    target->Set(NanNew("writeSTL"),   NanNew<FunctionTemplate>(writeSTL)->GetFunction());
-    target->Set(NanNew("writeSTEP"),   NanNew<FunctionTemplate>(writeSTEP)->GetFunction());
-    target->Set(NanNew("writeBREP"),   NanNew<FunctionTemplate>(writeBREP)->GetFunction());
-    target->Set(NanNew("readSTEP"),   NanNew<FunctionTemplate>(readSTEP)->GetFunction());
-    target->Set(NanNew("readBREP"),   NanNew<FunctionTemplate>(readBREP)->GetFunction());
+    //xx Nan::SetMethod(target,"oceVersion",NanNew("0.13"));
+    target->Set(Nan::New("oceVersion").ToLocalChecked(),  Nan::New("0.13").ToLocalChecked());
 
-    target->Set(NanNew("oceVersion"),  NanNew("0.13"));
-    target->Set(NanNew("gc"),     NanNew<FunctionTemplate>(ForceGC)->GetFunction());
-#endif
+    Nan::SetMethod(target,"gc",ForceGC);
+
 
 }
 NODE_MODULE(occ, Initialize)

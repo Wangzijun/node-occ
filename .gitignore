@@ -46,4 +46,13 @@ deps/
 *.html~
 /sample/views/*.ejs~
 
-build_oce/
+build_oce*/
+
+dist
+node-occ-package*
+extrudedFace.step
+lib/binding
+*.tgz
+npm-debug*
+occt-*
+

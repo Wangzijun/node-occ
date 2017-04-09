@@ -53,7 +53,7 @@
 
 #include <ElCLib.hxx>
 
-#include <FSD_BinaryFile.hxx>
+//xx #include <FSD_BinaryFile.hxx>
 
 #include <Geom_BezierCurve.hxx>
 #include <Geom_Circle.hxx>
@@ -65,9 +65,11 @@
 #include <gp_Pnt.hxx>
 #include <gp_Elips.hxx>
 #include <gp_Sphere.hxx>
+#include <gp_Circ.hxx>
 
 #include <gce_MakeCirc.hxx>
 #include <gce_MakePln.hxx>
+#include <gce_MakeLin.hxx>
 
 #include <GC_MakeSegment.hxx>
 #include <GC_MakeArcOfCircle.hxx>
@@ -106,7 +108,7 @@
 #include <STEPControl_Writer.hxx>
 #include <STEPControl_Reader.hxx>
 
-#include <ShapeSchema.hxx>
+//xx #include <ShapeSchema.hxx>
 
 // #include <StdPrs_ToolShadedShape.hxx>
 
@@ -116,7 +118,7 @@
 #include <Storage_Root.hxx>
 
 #include <StlAPI_Writer.hxx>
-#include <StlAPI_Reader.hxx>
+//xx #include <StlAPI_Reader.hxx>
 
 #include <TColgp_Array1OfDir.hxx>
 #include <TColgp_Array1OfPnt2d.hxx>
@@ -142,14 +144,19 @@
 #include <StepRepr_ProductDefinitionShape.hxx>
 #include <Interface_EntityIterator.hxx>
 #include <TransferBRep.hxx>
-#include <TDF_Label.hxx>
-#include <TDF_ChildIDIterator.hxx>
-#include <TDataStd_Name.hxx>
-#include <TNaming_Builder.hxx>
+//xx #include <TDF_Label.hxx>
+//xx #include <TDF_ChildIDIterator.hxx>
+//xx #include <TDataStd_Name.hxx>
+//xx #include <TNaming_Builder.hxx>
 #include <Interface_Graph.hxx>
 
+#include <Poly_Polygon3D.hxx>
+#include <BRep_TEdge.hxx>
+#include <BRep_ListIteratorOfListOfCurveRepresentation.hxx>
+#include <BRep_PolygonOnTriangulation.hxx>
+
 // Compatibility 6.5 and above
-#if (OCC_VERSION_MAJOR * 10 + OCC_VERSION_MINOR )  < 66 
+#if (OCC_VERSION_MAJOR * 10 + OCC_VERSION_MINOR )  < 66
 
 // this makes some adjustemnts to make sure node-occ can be
 // build with older version of OCC.
@@ -162,7 +169,7 @@
 #define BOPAlgo_CUT21   BOP_CUT21
 #define BOPAlgo_UNKNOWN BOP_UNKNOWN
 #define OUTER_SHELL(x)  BRepTools::OuterShell(x)
-#else 
+#else
 
 #include <BRepClass3d.hxx>
 #define OUTER_SHELL(x)  BRepClass3d::OuterShell(x)

@@ -9,11 +9,11 @@
 class Wire;
 class Face:  public Base {
 
+  friend class Mesh;
   TopoDS_Face m_face;
-  Persistent<Object> m_cacheMesh;
-  virtual ~Face() {
-    NanDisposePersistent(m_cacheMesh);
-  };
+  Nan::Persistent<v8::Object> m_cacheMesh;
+  virtual ~Face();
+
 public:
   int numWires();
   double area();
@@ -36,21 +36,25 @@ public:
 
   static NAN_METHOD(extrude);
 
-  virtual Local<Object> Clone() const;
+  virtual v8::Local<v8::Object> Clone() const;
 
   virtual Base* Unwrap(v8::Local<v8::Object> obj) const {
-    return node::ObjectWrap::Unwrap<Face>(obj);
+    return Nan::ObjectWrap::Unwrap<Face>(obj);
   }
   virtual void InitNew(_NAN_METHOD_ARGS);
 
 
-  Handle<Object> createMesh(double factor, double angle, bool qualityNormals);
+  v8::Handle<v8::Object> createMesh(double factor, double angle, bool qualityNormals);
 
-  static void Init(Handle<Object> target);
-  static Handle<Object> NewInstance(const TopoDS_Face& face);
+  static void Init(v8::Handle<v8::Object> target);
+  static v8::Handle<v8::Object> NewInstance(const TopoDS_Face& face);
 
   static NAN_METHOD(New);
+  static NAN_METHOD(createMesh); // custom mesh
   static NAN_PROPERTY_GETTER(_mesh);
+  static NAN_METHOD(getWires);
 
-  static v8::Persistent<v8::FunctionTemplate> _template;
+  static NAN_METHOD(NewInstance);
+
+  static Nan::Persistent<v8::FunctionTemplate> _template;
 };
