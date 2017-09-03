@@ -1,35 +1,35 @@
 {
   "name": "node-occ",
-  "version": "0.1.5",
-  "description": "OpenCascade OCE Wrapper for Node js",
+  "version": "0.2.2",
+  "description": "OpenCascade OCCT Wrapper for Node js",
   "preferGlobal": "true",
   "dependencies": {
-    "async": "^2.1.4",
+    "async": "^2.5.0",
     "colors": "*",
-    "gettemporaryfilepath": "0.0.1",
-    "nan": "^2.5.0",
+    "gettemporaryfilepath": "1.0.0",
+    "nan": "^2.6.2",
+    "node-pre-gyp": "^0.6.36",
     "pace": "~0.0.4",
-    "progress": "~1.1.8",
-    "temporary": "~0.0.8",
-    "node-pre-gyp": "0.6.x",
-    "should": "~11.1.2"
+    "progress": "~2.0.0"
   },
   "devDependencies": {
     "aws-sdk": "2.x",
-    "electron-rebuild": "^1.5.6",
-    "grunt": "~1.0.1",
-    "grunt-contrib-concat": "1.0.1",
-    "grunt-contrib-jshint": "~1.1.0",
+    "electron-rebuild": "^1.6.0",
+    "eslint": "^4.5.0",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-node": "^5.1.1",
+    "eslint-plugin-promise": "^3.5.0",
+    "eslint-plugin-require-path-exists": "^1.1.7",
+    "eslint-plugin-standard": "^3.0.1",
+    "grunt": "^1.0.1",
+    "grunt-contrib-concat": "^1.0.1",
     "grunt-contrib-nodeunit": "~1.0.0",
-    "grunt-contrib-uglify": "2.0.0",
+    "grunt-contrib-uglify": "3.0.1",
     "grunt-docco": "~0.5.0",
     "grunt-mocha-cli": "~3.0.0",
-    "mocha": "~3.2.0",
-    "eslint": "^3.12.2",
-    "eslint-config-standard": "^6.2.1",
-    "eslint-plugin-promise": "^3.4.0",
-    "eslint-plugin-require-path-exists": "^1.1.5",
-    "eslint-plugin-standard": "^2.0.1"
+    "mocha": "~3.5.0",
+    "should": "~11.2.1"
   },
   "main": "index",
   "author": {
@@ -49,23 +49,24 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/erossignon/node-occ.git"
+    "url": "https://github.com/openwebcad/node-occ.git"
   },
   "scripts": {
     "install": "node-pre-gyp install --fallback-to-build",
     "test": "mocha -R spec",
-    "lint": "eslint lib test bin"
+    "lint": "eslint lib test bin",
+    "doc": "grunt doc"
   },
   "binary": {
     "module_name": "occ",
     "module_path": "./lib/binding/",
     "host-aws": "https://nodeocc.s3-us-west-1.amazonaws.com",
-    "host": "https://github.com/erossignon/node-occ/releases/download/",
+    "host": "https://github.com/openwebcad/node-occ/releases/download/",
     "remote_path": "{version}"
   },
   "gypfile": true,
   "bugs": {
-    "url": "https://github.com/erossignon/node-occ/issues"
+    "url": "https://github.com/openwebcad/node-occ/issues"
   },
   "directories": {
     "test": "test"

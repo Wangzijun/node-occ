@@ -1,5 +1,5 @@
 language: cpp
-
+dist: trusty
 os:
   - linux
   - osx
@@ -15,6 +15,7 @@ env:
   - TRAVIS_NODE_VERSION="7"
   #- TRAVIS_NODE_VERSION="7" ARCH="x86"
   #- TRAVIS_ELECTRON_VERSION="1.4.14" TRAVIS_NODE_VERSION="6"
+  - TRAVIS_NODE_VERSION="8"
 
 matrix:
   exclude:
@@ -24,6 +25,8 @@ matrix:
     env: TRAVIS_NODE_VERSION="6" ARCH="x86"
   - os: osx
     env: TRAVIS_NODE_VERSION="7"
+  - os: osx
+    env: TRAVIS_NODE_VERSION="8"
   #- os: osx
   # env: TRAVIS_NODE_VERSION="7" ARCH="x86"
 
@@ -44,7 +47,7 @@ before_install:
 # download node if testing x86 architecture
 - >
   if [[ "$ARCH" == "x86" ]]; then
-    wget $BASE_URL/$X86_FILE.tar.gz
+    wget -q $BASE_URL/$X86_FILE.tar.gz
     tar -xf $X86_FILE.tar.gz
     export PATH=$X86_FILE/bin:$PATH
     ls $X86_FILE/bin
@@ -62,7 +65,7 @@ before_install:
 # use g++ on linux
 - if [[ $TRAVIS_OS_NAME == "linux" ]]; then export CXX=g++-4.8; fi
 - $CXX --version
-
+- npm install -g node-pre-gyp-github node-pre-gyp
 
 # compile Node-OCC
 - bash ./prepare_node.sh
@@ -77,6 +80,7 @@ script:
 - >
   if [[ -z $TRAVIS_ELECTRON_VERSION ]]; then
     export LD_LIBRARY_PATH=`pwd`/occt-7.1.0./lib
+    export DYLD_LIBRARY_PATH=`pwd`/occt-7.1.0./lib
     node ./
     npm test
   else
